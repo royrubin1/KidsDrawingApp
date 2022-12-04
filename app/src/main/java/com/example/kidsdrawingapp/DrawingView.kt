@@ -14,14 +14,9 @@ class DrawingView(context: Context,attrs:AttributeSet): View(context,attrs) {
     private var mDrawPath: CustomPath? =
         null // An variable of CustomPath inner class to use it further.
     private var mCanvasBitmap: Bitmap? = null // An instance of the Bitmap.
-
-    private var mDrawPaint: Paint? =
-        null // The Paint class holds the style and color information about how to draw geometries, text and bitmaps.
+    private var mDrawPaint: Paint? = null // The Paint class holds the style and color information about how to draw geometries, text and bitmaps.
     private var mCanvasPaint: Paint? = null // Instance of canvas paint view.
-
-    private var mBrushSize: Float =
-        0.toFloat() // A variable for stroke/brush size to draw on the canvas.
-
+    private var mBrushSize: Float = 0.toFloat() // A variable for stroke/brush size to draw on the canvas.
     // A variable to hold a color of the stroke.
     private var color = Color.BLACK
 
@@ -34,6 +29,7 @@ class DrawingView(context: Context,attrs:AttributeSet): View(context,attrs) {
      * drawing)
      */
     private var canvas: Canvas? = null
+    private val mPaths = ArrayList<CustomPath>()
 
     init {
         setUpDrawing()
@@ -88,6 +84,12 @@ class DrawingView(context: Context,attrs:AttributeSet): View(context,attrs) {
             canvas.drawBitmap(it, 0f,   0f, mCanvasPaint)
         }
 
+        for (path in mPaths) {
+            mDrawPaint?.strokeWidth = path.brushThickness
+            mDrawPaint?.color = path.color
+            canvas.drawPath(path, mDrawPaint!!)
+        }
+
         if (!mDrawPath!!.isEmpty) {
             mDrawPaint?.strokeWidth = mDrawPath!!.brushThickness
             mDrawPaint?.color = mDrawPath!!.color
@@ -123,6 +125,7 @@ class DrawingView(context: Context,attrs:AttributeSet): View(context,attrs) {
             }
 
             MotionEvent.ACTION_UP -> {
+                mPaths.add(mDrawPath!!)
                 mDrawPath = CustomPath(color, mBrushSize)
             }
             else -> return false
